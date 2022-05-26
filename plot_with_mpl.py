@@ -4,6 +4,7 @@ Created on Tue May 24 10:41:37 2022
 
 @author: solis
 """
+from os.path import dirname, exists
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -78,21 +79,48 @@ def stem_1(x, y, str_title, str_ylabel, markerfmt=' ', basefmt=' ',
 
 
 def subplot_nv(x, y, legends, title, ylabels, plot=[],
-               hspace=0.1, close_plt=True):
+               hspace=0.1, close_plt=True, fout=None):
     """
     Draw n graphs in the same figure of n time series.
     The graphs: are vertically aligned; share the x-axis
+
     Parameters
-    x[[dates]], y[[numbers]], legends[str], ylabels[str]: sequences same number
-        of elements
-    x[[date]]: x data values
-    y[[float]]: y data values
-    legends[str]: one legend of each date series
-    title: str. Upper title
-    ylabels[str]: One y label for each date series
-    plot[bool]: if true graph is of type plot, else type stem
-    close_plt: B
+    ----------
+    x : [[date]]
+        x data values.
+    y : [[float]]
+        y data values.
+    legends : [str]
+        one legend of each date series.
+    title : str
+        Upper figure title.
+    ylabels : [str]
+        One label for each data series.
+    plot : [bool], optional
+        if i true, graph is of type plot, else type stem.
+    hspace : float, optional
+        vertical spaces between axes. The default is 0.1.
+    close_plt : bool, optional
+        if True close.plt() is executed before plot is drawn.
+        The default is True.
+    fout : str, optional
+        Name of the output png file.
+
+    Raises
+    ------
+    ValueError
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
     """
+    if fout is not None:
+        d = dirname(fout)
+        if not exists(d):
+            raise ValueError(f'{d} no existe')
+
     n = len(x)
     if n != len(y) or n != len(legends) or n!= len(ylabels):
         raise ValueError('Arrays must have the same length')
@@ -124,4 +152,8 @@ def subplot_nv(x, y, legends, title, ylabels, plot=[],
         ax[i].legend()
         ax[i].set(ylabel=ylabels[i])
     plt.tight_layout()
-    plt.show()
+    if fout is None:
+        plt.show()
+    if fout is not None:
+        plt.savefig(fout)
+
